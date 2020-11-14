@@ -18,7 +18,7 @@ paths = [file for file in glob.glob(r"C:\Users\hamza\OneDrive\Desktop\DEV\**\*js
 
 def generate_tokens(file):
     f = open(file, "r")
-    #t = f.read().strip()
+
     loader = json.load(f)
     for words, value in loader.items():
         if words == "content":
@@ -46,37 +46,24 @@ def generate_tokens(file):
         if each in punc:
             text = text.replace(each," ")
 
-
-    #stemming = snowball.SnowballStemmer('english')
     text = text.lower()
-    # for docid, c in enumerate(text):
-    #     for s in sent_tokenize(text):
-    #         token_words = word_tokenize(s)
-    #         stem = stemming.stem(str(token_words))
-    #         inverted_index[token_words].add(docid)
-    #
-    #         #corpus += token_words
     for s in sent_tokenize(text):
         token_words = word_tokenize(s)
         corpus += token_words
 
-    # for docid, c in text:
-    #     for sent in sent_tokenize(c):
-    #         for word in word_tokenize(sent):
-    #             word_lower = word.lower()
-    #             word_stem = stemming.stem(word_lower)
-    #             inverted_index[word_stem].add(docid)
+    for item in corpus:
+        inverted_index = {}
+        my_file = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")
+        if my_file.is_file():
+            with open("inverted_index.txt")as index:
+                inverted_index = json.loads(index.read())
 
-    # for item in corpus:
-    #     inverted_index = {}
-    #     with open("inverted_index.txt", 'w')as index:
-    #         inverted_index = json.load(index)
-    #     if item not in inverted_index:
-    #         inverted_index[item] = 1
-    #     if item in inverted_index:
-    #         inverted_index[item] += 1
-    #     with open("inverted_index.txt", 'w')as index:
-    #         index.write(json.dumps(inverted_index))
+        if item not in inverted_index:
+            inverted_index[item] = 1
+        if item in inverted_index:
+            inverted_index[item] += 1
+        with open("inverted_index.txt", 'w')as index:
+            index.write(json.dumps(inverted_index))
 
     return corpus
 
@@ -113,7 +100,7 @@ def main():
         #print(folder)
         corpus = generate_tokens(folder)
         length_of_unique = reportFunc(corpus)
-        count+= 1
+        count += 1
     report = open("report.txt", "a+", encoding="utf-8")
     report.write("Number of Indexed Documents: " + count + "\n")
     report.write("The number of unique word: " + length_of_unique + "\n")
