@@ -11,10 +11,9 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from bs4 import BeautifulSoup
 import string
 
-paths = [file for file in glob.glob(r"C:\Users\teehe\Desktop\DEV\**\*json")]
+paths = [file for file in glob.glob(r"C:\Users\hamza\OneDrive\Desktop\DEV\**\*json")]
 
 def generate_tokens(file):
-
     f = open(file, "r")
     #t = f.read().strip()
     loader = json.load(f)
@@ -40,38 +39,43 @@ def generate_tokens(file):
             text = soup.get_text()
 
     corpus = []
+    punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~©'''
+    for each in text:
+        if each in punc:
+            text = text.replace(each," ")
+
     for s in sent_tokenize(text):
         token_words = word_tokenize(s)
         # for t in token_words:
         #     if t.isalnum()==True:
         corpus += token_words
-    print(corpus)
+    return corpus
 
-
-
-
-    #for file_name in [file for file in glob.glob(r"C:\Users\teehe\Desktop\DEV\**\*json")]:
-        #for prefix, the_type, value in ijson.parse(open(file_name)):
-
-            #if the_type == "content":
-            #file_name = re.findall('><a href="(.*)">', prefix)
-            #file_title = re.findall('<br><td> (.*)\n', value)
-            #print(file_name)
-            #ff = list(filter(None, (re.split((r"(\\[a-z])|[^a-z\\A-Z0-9]+"), value))))
-            #soup = BeautifulSoup(value, 'html.parser')
-            #print(x)
-            #val = (json.loads(str(soup.text)))
-            #val2 = str(val)
-            #print(val2)
-            #text = json.dumps(value)
-            #text = soup.get_text(text)
-            #text_tokens = word_tokenize(text)
-            #print(prefix, the_type,value)
+def reportFunc(tokens):
+    file1 = open("file1.txt", "a+" , encoding ="utf-8")
+    file2 = open("file2.txt", "a+" , encoding ="utf-8")
+    for token in range(len(tokens)):
+        if token + 6 < len(tokens):
+            file1.write(tokens[token] + " ")
+            file1.write(tokens[token + 1] + " ")
+            file1.write(tokens[token + 2] + " ")
+            file1.write(tokens[token + 3] + " ")
+            file1.write(tokens[token + 4] + " " + "\n")
+            in_file = False
+            for line in file2.readlines():
+                if tokens[token] == line:
+                    in_file = True
+            if in_file == False:
+                file2.write(tokens[token] + "\n")
+    #os.path.getsize()
 
 def main():
+    count = 0
     for folder in paths:
         #print(folder)
-        generate_tokens(folder)
+        corpus = generate_tokens(folder)
+        reportFunc(corpus)
+        count+= 1
 
 if __name__ == "__main__":
     main()
