@@ -54,6 +54,8 @@ def generate_tokens(file):
 def reportFunc(tokens):
     file1 = open("file1.txt", "a+" , encoding ="utf-8")
     file2 = open("file2.txt", "a+" , encoding ="utf-8")
+    file1.truncate(0)
+    file2.truncate(0)
     for token in range(len(tokens)):
         if token + 6 < len(tokens):
             file1.write(tokens[token] + " ")
