@@ -10,6 +10,7 @@ import nltk
 from collections import defaultdict
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import snowball
+from pathlib import Path
 from bs4 import BeautifulSoup
 import string
 
@@ -59,8 +60,6 @@ def generate_tokens(file):
         token_words = word_tokenize(s)
         corpus += token_words
 
-    inverted_index = {}
-    index = open("inverted_index.txt", "a+", encoding="utf-8")
     # for docid, c in text:
     #     for sent in sent_tokenize(c):
     #         for word in word_tokenize(sent):
@@ -68,13 +67,17 @@ def generate_tokens(file):
     #             word_stem = stemming.stem(word_lower)
     #             inverted_index[word_stem].add(docid)
 
-    for item in corpus:
-        if item not in inverted_index:
-            inverted_index[item] = 1
-        if item in inverted_index:
-            inverted_index[item] += 1
+    # for item in corpus:
+    #     inverted_index = {}
+    #     with open("inverted_index.txt", 'w')as index:
+    #         inverted_index = json.load(index)
+    #     if item not in inverted_index:
+    #         inverted_index[item] = 1
+    #     if item in inverted_index:
+    #         inverted_index[item] += 1
+    #     with open("inverted_index.txt", 'w')as index:
+    #         index.write(json.dumps(inverted_index))
 
-    index.write(str(inverted_index))
     return corpus
 
 def reportFunc(tokens):
