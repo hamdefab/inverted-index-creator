@@ -96,14 +96,17 @@ def reportFunc(tokens):
 
 def main():
     count = 0
+    length_of_unique = 0
+
     for folder in paths:
-        #print(folder)
         corpus = generate_tokens(folder)
         length_of_unique = reportFunc(corpus)
         count += 1
-    report = open("report.txt", "a+", encoding="utf-8")
-    report.write("Number of Indexed Documents: " + count + "\n")
-    report.write("The number of unique word: " + length_of_unique + "\n")
+
+    with open("report.txt", "w") as report:
+        report.write("Number of Indexed Documents: " + str(count) + "\n")
+        report.write("The number of unique word: " + str(length_of_unique) + "\n")
+        report.write("Size of Inverted Index: " + str(os.path.getsize(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")) + "\n")
 
 if __name__ == "__main__":
     main()
