@@ -16,7 +16,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import string
 
-paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
+paths = [file for file in glob.glob(r"C:\Users\hamza\OneDrive\Desktop\DEV\**\*json")]
 
 def generate_tokens(file):
     f = open(file, "r")
@@ -25,27 +25,13 @@ def generate_tokens(file):
         if words == "content":
             theText = ""
             soup = BeautifulSoup(value, "html.parser")
-            for title in soup.find_all('title'):
-                try:
-                    theText += title.string
-                except:
-                    pass
-            for bold in soup.find_all('b'):
-                try:
-                    theText += bold.string
-                except:
-                    pass
-            for i in soup.find_all('strong'):
-                theText += str(i.string)
 
-            for h in soup.find_all('h1', 'h2', 'h3'):
-                theText += string(h)
+            for h in soup.find_all('h1', 'h2', 'h3', 'b', 'title'):
+                theText += h.string + " " + h.string + " " + h.string
             text = soup.get_text()
     corpus = []
     punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~©'''
-    # for each in text:
-    #     if each in punc:
-    #         text = text.replace(each," ")
+
     text = text.strip(punc)
     text = text.lower()
     ps=PorterStemmer()
@@ -54,22 +40,16 @@ def generate_tokens(file):
         temp=[]
         for token in token_words:
             temp.append(ps.stem(token).strip(punc))
-        corpus += ' '.join(temp)
+        corpus += temp
     return corpus
 
 
 
 def reportFunc(tokens,count):
-    #file1 = open("file1.txt", "a+" , encoding ="utf-8")
-    file2 = open("file2.txt", "a+" , encoding ="utf-8")
 
-    # for token in range(len(tokens)):
-        #if token + 6 < len(tokens):
-        #    file1.write(tokens[token] + " ")
-        #    file1.write(tokens[token + 1] + " ")
-        #    file1.write(tokens[token + 2] + " ")
-        #    file1.write(tokens[token + 3] + " ")
-        #    file1.write(tokens[token + 4] + " " + "\n")
+    file2 = open("file2.txt", "a+" , encoding ="utf-8")
+    tokens = " ".join(tokens)
+
     in_file = False
     lines = file2.readlines()
     for token in range(len(''.join(tokens).split(" "))):
@@ -81,13 +61,12 @@ def reportFunc(tokens,count):
             file2.write(temp[token] + "\n")
     file2.seek(0)
     length = len(file2.readlines())
-    #file1.close()
     file2.close()
     file2 = open('file2.txt','r', encoding ="utf-8")
     uniqe_words = file2.readlines()
     file2.close()
     inverted_index = {}
-    my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
+    my_file = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")
 
     if my_file.is_file():
         with open("inverted_index.txt") as f:
