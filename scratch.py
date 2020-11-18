@@ -69,7 +69,7 @@ def reportFunc(tokens,count):
     my_file = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")
 
     if my_file.is_file():
-        with open("inverted_index.txt") as f:
+        with open("inverted_index.txt", encoding ="utf-8") as f:
             inverted_index = eval(f.read())
     for unique in uniqe_words:
         temp = unique.strip('\n').strip(' ')
@@ -80,7 +80,7 @@ def reportFunc(tokens,count):
         elif tokens.count(temp)!=0:
             set_tup={(tokens.count(temp),count)}
             inverted_index[temp] = set_tup
-    with open('inverted_index.txt', "w") as data:
+    with open('inverted_index.txt', "w", encoding ="utf-8") as data:
         data.write(str(inverted_index))
     print(count)
     return length
@@ -93,9 +93,8 @@ def search(query,tot_count):
     inverted_index = {}
     for token in tokens:
         stems.append(ps.stem(token))
-    with open('inverted_index.txt', "r") as f:
+    with open('inverted_index.txt', "r", encoding ="utf-8") as f:
         inverted_index = eval(f.read())
-    #inverted_index = json.loads(data)
     max_tups = [(-1, -1),(-1, -1),(-1, -1),(-1, -1),(-1, -1)]
 
     for current_count in range(tot_count):
@@ -110,13 +109,13 @@ def search(query,tot_count):
     if max_tup == (-1, -1):
         print("Your query sucks!")
     else:
-        file_json = open('json_files.txt', 'r')
+        file_json = open('json_files.txt', 'r', encoding ="utf-8")
         output = file_json.readlines()[max_tup[1]]
         print(max_tup[0], output.split("\\")[-1])
         #print(max_tup)
 
 def make_all_files_count():
-    file_json = open('json_files.txt','w')
+    file_json = open('json_files.txt','w', encoding ="utf-8")
     for i in paths:
         file_json.write(i + "\n")
     file_json.close()
@@ -125,10 +124,6 @@ def main():
     # inverted_index = {}
     # with open('inverted_index.txt', "r") as f:
     #     inverted_index = eval(f.read())
-    # inverted_index = json.loads(data)
-    # # sort_ind = sorted(inverted_index)
-    # # with open("inverted_index.txt", 'a+')as index:
-    # #     index.write(json.dumps(sort_ind))
     # make_all_files_count()
     # start_time =time.time()
     # search(input('query: '),24)
@@ -140,12 +135,6 @@ def main():
         corpus = generate_tokens(folder)
         length_of_unique = reportFunc(corpus,count)
         count += 1
-    # with open("report.txt", "w") as report:
-    #     report.write("Number of Indexed Documents: " + str(count) + "\n")
-    #     report.write("The number of unique word: " + str(length_of_unique) + "\n")
-    #     #report.write("Size of Inverted Index: " + str(os.path.getsize(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")) + "\n")
-
-
 
 if __name__ == "__main__":
     main()
