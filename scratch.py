@@ -96,7 +96,7 @@ def search(query,tot_count):
     with open('inverted_index.txt', "r") as f:
         inverted_index = eval(f.read())
     #inverted_index = json.loads(data)
-    max_tup = (-1, -1)
+    max_tups = [(-1, -1),(-1, -1),(-1, -1),(-1, -1),(-1, -1)]
 
     for current_count in range(tot_count):
         temp = 0
@@ -122,24 +122,24 @@ def make_all_files_count():
     file_json.close()
 
 def main():
-    inverted_index = {}
-    with open('inverted_index.txt', "r") as f:
-        inverted_index = eval(f.read())
-    #inverted_index = json.loads(data)
-    #sort_ind = sorted(inverted_index)
-    # with open("inverted_index.txt", 'a+')as index:
-    #     index.write(json.dumps(sort_ind))
-    make_all_files_count()
-    start_time =time.time()
-    search(input('query: '),24)
-    end_time = time.time()
-    print(end_time-start_time)
-    # count = 0
-    # length_of_unique = 0
-    # for folder in paths:
-    #     corpus = generate_tokens(folder)
-    #     length_of_unique = reportFunc(corpus,count)
-    #     count += 1
+    # inverted_index = {}
+    # with open('inverted_index.txt', "r") as f:
+    #     inverted_index = eval(f.read())
+    # inverted_index = json.loads(data)
+    # # sort_ind = sorted(inverted_index)
+    # # with open("inverted_index.txt", 'a+')as index:
+    # #     index.write(json.dumps(sort_ind))
+    # make_all_files_count()
+    # start_time =time.time()
+    # search(input('query: '),24)
+    # end_time = time.time()
+    # print(end_time-start_time)
+    count = 0
+    length_of_unique = 0
+    for folder in paths:
+        corpus = generate_tokens(folder)
+        length_of_unique = reportFunc(corpus,count)
+        count += 1
     # with open("report.txt", "w") as report:
     #     report.write("Number of Indexed Documents: " + str(count) + "\n")
     #     report.write("The number of unique word: " + str(length_of_unique) + "\n")
