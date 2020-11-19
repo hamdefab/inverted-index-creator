@@ -111,32 +111,11 @@ def search(query,tot_count):
             elif len(temp)!=0:
                 max_tups[-1] = (int(max_tups[-1][0])+int(temp[0][0]),temp[0][1])
     file_json = open('json_files.txt', 'r', encoding ="utf-8")
-    print(max_tups)
-    for i in sorted(max_tups)[-5:]:
+    for i in sorted(max_tups, reverse=True)[:5]:
         file_json.seek(0)
         output = file_json.readlines()[i[1]]
-        print(i[0], output.split("\\")[-1])
+        print(i[0], output.split("/")[-1])
     file_json.close()
-
-
-
-    # for current_count in range(tot_count):
-    #     temp = 0
-    #     for i in stems:
-    #         print(i,current_count)
-    #         if i in inverted_index:
-    #             lis=inverted_index[i]
-    #             print(lis)
-    #             if current_count in list(lis)[1]:
-    #                 temp += list(lis)[1][current_count]
-    #             if temp> max_tup[0]:
-    #                 max_tup =(temp,current_count)
-    # if max_tup == (-1, -1):
-    #     print("Your query sucks!")
-    # else:
-    #     file_json = open('json_files.txt', 'r', encoding ="utf-8")
-    #     output = file_json.readlines()[max_tup[1]]
-    #    print(max_tup[0], output.split("\\")[-1])
 
 def make_all_files_count():
     file_json = open('json_files.txt','w', encoding ="utf-8")
