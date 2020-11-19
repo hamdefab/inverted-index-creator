@@ -17,6 +17,7 @@ from bs4 import BeautifulSoup
 import string
 
 paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
+my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
 
 def generate_tokens(file):
     f = open(file, "r")
@@ -70,7 +71,6 @@ def reportFunc(tokens,count):
     uniqe_words = file2.readlines()
     file2.close()
     inverted_index = {}
-    my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
 
     if my_file.is_file():
         with open("inverted_index.txt", encoding ="utf-8") as f:
@@ -128,9 +128,9 @@ def make_all_files_count():
 
 def main():
     run_type = input('r/s: ')
-    if run_type =='s':
+    if run_type =='s' and my_file.is_file():
         inverted_index = {}
-        with open('inverted_index.txt', "r") as f:
+        with open('inverted_index.txt', "r", encoding ="utf-8") as f:
             inverted_index = eval(f.read())
         make_all_files_count()
         start_time =time.time()
