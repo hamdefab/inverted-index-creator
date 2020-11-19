@@ -16,7 +16,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import string
 
-paths = [file for file in glob.glob(r"C:\Users\hamza\OneDrive\Desktop\DEV\**\*json")]
+paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
 
 def generate_tokens(file):
     f = open(file, "r")
@@ -25,9 +25,10 @@ def generate_tokens(file):
         if words == "content":
             theText = ""
             soup = BeautifulSoup(value, "html.parser")
-
             for h in soup.find_all('h1', 'h2', 'h3', 'b', 'title'):
                 theText += h.string + " " + h.string + " " + h.string
+            for h in soup.find_all('p'):
+                theText += h.string
             text = soup.get_text()
     corpus = []
     punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~©'''
@@ -66,7 +67,7 @@ def reportFunc(tokens,count):
     uniqe_words = file2.readlines()
     file2.close()
     inverted_index = {}
-    my_file = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")
+    my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
 
     if my_file.is_file():
         with open("inverted_index.txt", encoding ="utf-8") as f:
@@ -95,24 +96,47 @@ def search(query,tot_count):
         stems.append(ps.stem(token))
     with open('inverted_index.txt', "r", encoding ="utf-8") as f:
         inverted_index = eval(f.read())
-    max_tups = [(-1, -1),(-1, -1),(-1, -1),(-1, -1),(-1, -1)]
-
+    max_tups = []
+    stem_set_list = []
+    for i in stems:
+        if i in inverted_index:
+            stem_set_list.append(list(inverted_index[i]))
     for current_count in range(tot_count):
-        temp = 0
-        for i in stems:
-            if i in inverted_index:
-                lis=inverted_index[i]
-                if current_count in list(lis)[1]:
-                    temp += list(lis)[1][current_count]
-                if temp> max_tup[0]:
-                    max_tup =(temp,current_count)
-    if max_tup == (-1, -1):
-        print("Your query sucks!")
-    else:
-        file_json = open('json_files.txt', 'r', encoding ="utf-8")
-        output = file_json.readlines()[max_tup[1]]
-        print(max_tup[0], output.split("\\")[-1])
-        #print(max_tup)
+        started_file = False
+        for i in stem_set_list: #takes sets from inverted index that are in inverted index casts as list now we iterate through those
+            temp = [lis for lis in i if lis[1]==current_count] #gives u whatever tuples in i at file current_count
+            if len(temp)!=0 and started_file==False:
+                max_tups.extend(temp)
+                started_file=True
+            elif len(temp)!=0:
+                max_tups[-1] = (int(max_tups[-1][0])+int(temp[0][0]),temp[0][1])
+    file_json = open('json_files.txt', 'r', encoding ="utf-8")
+    print(max_tups)
+    for i in sorted(max_tups)[-5:]:
+        file_json.seek(0)
+        output = file_json.readlines()[i[1]]
+        print(i[0], output.split("\\")[-1])
+    file_json.close()
+
+
+
+    # for current_count in range(tot_count):
+    #     temp = 0
+    #     for i in stems:
+    #         print(i,current_count)
+    #         if i in inverted_index:
+    #             lis=inverted_index[i]
+    #             print(lis)
+    #             if current_count in list(lis)[1]:
+    #                 temp += list(lis)[1][current_count]
+    #             if temp> max_tup[0]:
+    #                 max_tup =(temp,current_count)
+    # if max_tup == (-1, -1):
+    #     print("Your query sucks!")
+    # else:
+    #     file_json = open('json_files.txt', 'r', encoding ="utf-8")
+    #     output = file_json.readlines()[max_tup[1]]
+    #    print(max_tup[0], output.split("\\")[-1])
 
 def make_all_files_count():
     file_json = open('json_files.txt','w', encoding ="utf-8")
@@ -121,20 +145,26 @@ def make_all_files_count():
     file_json.close()
 
 def main():
-    # inverted_index = {}
-    # with open('inverted_index.txt', "r") as f:
-    #     inverted_index = eval(f.read())
-    # make_all_files_count()
-    # start_time =time.time()
-    # search(input('query: '),24)
-    # end_time = time.time()
-    # print(end_time-start_time)
-    count = 0
-    length_of_unique = 0
-    for folder in paths:
-        corpus = generate_tokens(folder)
-        length_of_unique = reportFunc(corpus,count)
-        count += 1
+    run_type = input('r/s: ')
+    if run_type =='s':
+        inverted_index = {}
+        with open('inverted_index.txt', "r") as f:
+            inverted_index = eval(f.read())
+        make_all_files_count()
+        start_time =time.time()
+        search(input('query: '),24)
+        end_time = time.time()
+        print(end_time-start_time)
+    elif run_type=='r':
+        count = 0
+        length_of_unique = 0
+        for folder in paths:
+            corpus = generate_tokens(folder)
+            length_of_unique = reportFunc(corpus,count)
+            count += 1
+    else:
+        main()
+
 
 if __name__ == "__main__":
     main()
