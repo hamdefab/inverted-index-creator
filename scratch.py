@@ -28,7 +28,10 @@ def generate_tokens(file):
             for h in soup.find_all('h1', 'h2', 'h3', 'b', 'title'):
                 theText += h.string + " " + h.string + " " + h.string
             for h in soup.find_all('p'):
-                theText += h.string
+                try:
+                    theText += h.string
+                except:
+                    pass
             text = soup.get_text()
     corpus = []
     punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~©'''
