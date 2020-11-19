@@ -18,6 +18,7 @@ import string
 
 paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
 my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
+my_dup = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/duplicate.txt")
 
 def generate_tokens(file):
     f = open(file, "r")
@@ -126,8 +127,87 @@ def make_all_files_count():
         file_json.write(i + "\n")
     file_json.close()
 
+def find_duplicates(tot_files):
+    inverted_index={}
+    with open('inverted_index.txt', "r", encoding ="utf-8") as f:
+        inverted_index = eval(f.read())
+    stem_set_list = []
+    for i in inverted_index:
+        stem_set_list.append(list(inverted_index[i]))
+    for prim_file in range(tot_files):
+        for sec_file in range(tot_files):
+            #similar files have at most 5% difference
+            dup=True
+            if prim_file!=sec_file:
+                for token in stem_set_list:
+                    dict_prim = dict((v,k) for (k,v) in enumerate(tup[0] for tup in token))
+                    try:
+                        prim_tup = dict_prim[prim_file]
+                    except:
+                        prim_tup=0
+                    try:
+                        sec_tup = dict_prim[sec_file]
+                    except:
+                        sec_tup=0
+                    if prim_tup !=0 and sec_tup !=0:
+                        if prim_tup/sec_tup > 1.05 or prim_tup/sec_tup < .95:
+                            dup=False
+                    elif prim_tup ==0 and sec_tup>5:
+                        dup = False
+                    elif sec_tup ==0 and prim_tup>5:
+                        dup = False
+                if dup:
+                    if my_dup.is_file():
+                        dup_file = open('duplicate.txt','r+', encoding ="utf-8")
+                        duplicates= dup_file.readlines()
+                    else:
+                        dup_file = open('duplicate.txt','w+', encoding ="utf-8")
+                        duplicates = []
+                    dup_file.seek(0)
+                    temp_lines = list(duplicates)
+                    same_line=False
+                    for line in range(len(temp_lines)):
+                        if str(prim_file) in temp_lines[line].strip('\n').split(' ') and str(sec_file) not in temp_lines[line].strip('\n').split(' '):
+                            duplicates[line] = duplicates[line].strip('\n')+" "+str(sec_file)
+                        elif str(sec_file) in temp_lines[line].strip('\n').split(' ') and str(prim_file) not in temp_lines[line].strip('\n').split(' '):
+                            duplicates[line] = duplicates[line].strip('\n')+" "+str(prim_file)
+                        elif str(prim_file) in temp_lines[line].strip('\n').split(' ') and str(sec_file) in temp_lines[line].strip('\n').split(' '):
+                            same_line=True
+                    if temp_lines==duplicates and same_line ==False:
+                        duplicates.append(str(prim_file)+" "+str(sec_file))
+                    for i in duplicates:
+                        if i!='\n':
+                            dup_file.write(i.strip('\n')+'\n')
+                    dup_file.close()
+
+def clear_duplicates(tot_count):
+    inverted_index={}
+    with open('inverted_index.txt', "r", encoding ="utf-8") as f:
+        inverted_index = eval(f.read())
+    f.close()
+    stem_set_list = []
+    for i in inverted_index:
+        stem_set_list.append(list(inverted_index[i]))
+    dup_file = open('duplicate.txt','r+', encoding ="utf-8")
+    duplicates= dup_file.readlines()
+    dup_file.close()
+    for dup_series in duplicates:
+        valid_dup = dup_series.split(' ')[0]
+        for dups in dup_series.split(' '):
+            for token_lis in stem_set_list:
+                for i in range(len(token_lis)):
+                    if token_lis[i][1]==dups:
+                        token_lis.remove(token_lis[i])
+    count=0
+    for i in inverted_index:
+        inverted_index[i] = set(stem_set_list[count])
+        count+=1
+    dict_file=open('inverted_index.txt', "w", encoding ="utf-8")
+    dict_file.write(str(inverted_index))
+
+
 def main():
-    run_type = input('r/s: ')
+    run_type = input('r/s/c: ')
     if run_type =='s' and my_file.is_file():
         inverted_index = {}
         with open('inverted_index.txt', "r", encoding ="utf-8") as f:
@@ -144,6 +224,9 @@ def main():
             corpus = generate_tokens(folder)
             length_of_unique = reportFunc(corpus,count)
             count += 1
+    elif run_type == "c" and my_file.is_file():
+        find_duplicates(24)
+        clear_duplicates(24)
     else:
         main()
 
