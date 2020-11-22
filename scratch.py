@@ -15,6 +15,7 @@ from nltk.stem import snowball
 from pathlib import Path
 from bs4 import BeautifulSoup
 import string
+from multiprocessing import Pool
 
 paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
 my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
@@ -37,7 +38,6 @@ def generate_tokens(file):
             text = soup.get_text()
     corpus = []
     punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~©'''
-
     text = text.strip(punc)
     text = text.lower()
     ps=PorterStemmer()
@@ -51,28 +51,20 @@ def generate_tokens(file):
 
 
 
-def reportFunc(tokens,count):
+def reportFunc(tokens,count,inverted_index,lines):
     file2 = open("file2.txt", "a+", encoding ="utf-8")
+    uniqe_words = list(lines)
     tokens = " ".join(tokens)
     in_file = False
-    lines = file2.readlines()
     for token in range(len(''.join(tokens).split(" "))):
         temp = ''.join(tokens).split(" ")
         for line in lines:
             if temp[token] == line.strip("\n"):
                 in_file = True
-        if in_file == False and '-' not in temp[token] and ',' not in temp[token]:
+        if in_file == False and '-' != temp[token] and ',' not in temp[token] and '-' not in temp[token]:
             file2.write(temp[token] + "\n")
-    file2.seek(0)
-    length = len(file2.readlines())
+            uniqe_words.append(temp[token])
     file2.close()
-    file2 = open('file2.txt','r', encoding ="utf-8")
-    uniqe_words = file2.readlines()
-    file2.close()
-    inverted_index = {}
-    if my_file.is_file():
-        with open("inverted_index.txt", encoding ="utf-8") as f:
-            inverted_index = eval(f.read())
     for unique in range(len(uniqe_words)):
         temp = uniqe_words[unique].strip('\n').strip(' ')
         if temp in inverted_index and tokens.count(temp)!=0:
@@ -82,10 +74,8 @@ def reportFunc(tokens,count):
         elif tokens.count(temp)!=0:
             set_tup={str(tokens.count(temp))+":"+str(count)+':'+str(int(len(tokens)/(tokens.index(temp)+1)))}
             inverted_index[temp] = set_tup
-    with open('inverted_index.txt', "w", encoding ="utf-8") as data:
-        data.write(str(inverted_index))
-    print(count)
-    return length
+    #print(count)
+    return inverted_index
 
 def search(query,tot_count):
     ps = PorterStemmer()
@@ -202,6 +192,24 @@ def clear_duplicates(tot_count):
         dict_file=open('inverted_index.txt', "w", encoding ="utf-8")
         dict_file.write(str(inverted_index))
 
+def merge_indicies(list_o_indicies):
+    result_dict={}
+    for i in list_o_indicies:
+        for toke in i:
+            if toke in result_dict:
+                result_dict[toke]=result_dict[toke] | i[toke]
+            else:
+                result_dict[toke] = i[toke]
+    return result_dict
+
+def run_load(tup_arg):
+    folder=tup_arg[0]
+    count=tup_arg[1]
+    inverted_index=tup_arg[2]
+    lines = tup_arg[3]
+    corpus = generate_tokens(folder)
+    return reportFunc(corpus,count,inverted_index,lines)
+
 
 def main():
     run_type = input('r/s/c: ')
@@ -211,19 +219,35 @@ def main():
             inverted_index = eval(f.read())
         make_all_files_count()
         start_time =time.time()
-        search(input('query: '),24)
+        search(input('query: '),2400)
         end_time = time.time()
         print(end_time-start_time)
     elif run_type=='r':
-        count = 0
-        length_of_unique = 0
-        for folder in paths:
-            corpus = generate_tokens(folder)
-            length_of_unique = reportFunc(corpus,count)
-            count += 1
+        inverted_index={}
+        if my_file.is_file():
+            with open("inverted_index.txt", encoding ="utf-8") as f:
+                inverted_index = eval(f.read())
+        list_o_tups=[]
+        for i in range(int(len(paths)/100)):
+            start_time =time.time()
+            file2 = open("file2.txt", "a+", encoding ="utf-8")
+            lines= file2.readlines()
+            for j in range(100):
+                list_o_tups.append((paths[j+100*i],j+100*i,inverted_index,lines))
+            with Pool(100) as p:
+                list_o_indicies = p.map(run_load,list_o_tups[(i)*100:(i+1)*100])
+            list_o_indicies.append(inverted_index)
+            final_index=merge_indicies(list_o_indicies)
+            with open('inverted_index.txt', "w", encoding ="utf-8") as data:
+                data.write(str(final_index))
+            inverted_index=final_index
+            end_time = time.time()
+            print('indexed files '+str(i*100)+' through '+str((i+1)*100)+' in '+str(end_time-start_time)+' seconds')
+        print('finished dat shit')
+
     elif run_type == "c" and my_file.is_file():
-        find_duplicates(24)
-        clear_duplicates(24)
+        find_duplicates(2400)
+        clear_duplicates(2400)
     else:
         main()
 
