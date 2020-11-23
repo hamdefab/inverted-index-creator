@@ -202,6 +202,18 @@ def merge_indicies(list_o_indicies):
                 result_dict[toke] = i[toke]
     return result_dict
 
+def mega_merge():
+    file2 = open("file2.txt", "a+", encoding ="utf-8")
+    lines= file2.readlines()
+    file2.close()
+    for line in lines:
+        with open('inverted_index.json', "rb", encoding ="utf-8") as data:
+            json_obj = ijson.items(data,'item.drugs')
+            set = (c for c in json_obj if c['type']==line.strip('\n'))
+            print(set)
+
+
+
 def run_load(tup_arg):
     folder=tup_arg[0]
     count=tup_arg[1]
@@ -227,22 +239,27 @@ def main():
         if my_file.is_file():
             with open("inverted_index.txt", encoding ="utf-8") as f:
                 inverted_index = eval(f.read())
-        list_o_tups=[]
         for i in range(int(len(paths)/100)):
+            list_o_tups=[]
             start_time =time.time()
             file2 = open("file2.txt", "a+", encoding ="utf-8")
             lines= file2.readlines()
+            file2.close()
             for j in range(100):
                 list_o_tups.append((paths[j+100*i],j+100*i,inverted_index,lines))
             with Pool(100) as p:
-                list_o_indicies = p.map(run_load,list_o_tups[(i)*100:(i+1)*100])
+                list_o_indicies = p.map(run_load,list_o_tups)
             list_o_indicies.append(inverted_index)
             final_index=merge_indicies(list_o_indicies)
+            #json_obj=json.dumps(final_index)
             with open('inverted_index.txt', "w", encoding ="utf-8") as data:
+            #    data.seek(2)
+            #    data.write(json_obj)
                 data.write(str(final_index))
             inverted_index=final_index
             end_time = time.time()
             print('indexed files '+str(i*100)+' through '+str((i+1)*100)+' in '+str(end_time-start_time)+' seconds')
+
         print('finished dat shit')
 
     elif run_type == "c" and my_file.is_file():
