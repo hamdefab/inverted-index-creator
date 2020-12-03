@@ -290,7 +290,7 @@ def main():
         group_index.append(len(paths)-sum(group_index))
         num_of_paths=0
         status=0
-        stopping_num=10000
+        stopping_num=0 #if need to start run in middle
         temp_sum=0
         turnicate_group=0
         for i in range(len(group_index)):
@@ -374,10 +374,35 @@ def main():
             inverted_index=final_index
             end_time = time.time()
             print('indexed files '+str(num_of_paths-group_index[i])+' through '+str(num_of_paths)+' in '+str(end_time-start_time)+' seconds')
+        with open('inverted_index'+str(status+1)+'.txt', "w+", encoding ="utf-8") as data:
+            data.write(str(final_index))
+        print(status+1)
         print('finished dat shit')
+        dict_1={}
+        dict_temp={}
+        dict_10={}
+        dict_20={}
+        dict_30={}
+        dict_40={}
+        dict_50={}
+        print('holy smokes')
+        with open('inverted_index1.txt', "r", encoding ="utf-8") as data:
+            dict_1=eval(data.read())
+        for i in range(status):
+            with open('inverted_index'+str(status+1)+'.txt', "r", encoding ="utf-8") as data:
+                dict_temp = eval(data.read())
+            dict_1.update(dict_temp)
+        for i in range(5):
+            with open('inverted_index_first_'+str(i+1)+'0.txt', "r", encoding ="utf-8") as data:
+                dict_temp = eval(data.read())
+            dict_1.update(dict_temp)
+        with open('inverted_index.txt', "w", encoding ="utf-8") as data:
+            data.write(str(dict_1))
+        print('we merged dat bih')
+
     elif run_type == "c" and my_file.is_file():
-        find_duplicates(2400)
-        clear_duplicates(2400)
+        find_duplicates(55000)
+        clear_duplicates(55000)
     elif run_type=='m':
         mega_merge()
     else:
