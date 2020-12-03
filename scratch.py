@@ -317,52 +317,53 @@ def main():
                 list_o_indicies = p.map(run_load,list_o_tups)
             list_o_indicies.append(inverted_index)
             final_index=merge_indicies(list_o_indicies)
-            if num_of_paths >1000 and status<1:
+            print(num_of_paths)
+            if num_of_paths-10000*ten_tho_counter >1000 and status<1:
                 with open('inverted_index1.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=1
                 final_index={}
-            elif num_of_paths >2000 and status<2:
+            elif num_of_paths-10000*ten_tho_counter >2000 and status<2:
                 with open('inverted_index2.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=2
                 final_index={}
-            elif num_of_paths >3000 and status<3:
+            elif num_of_paths-10000*ten_tho_counter >3000 and status<3:
                 with open('inverted_index3.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=3
                 final_index={}
-            elif num_of_paths >4000 and status<4:
+            elif num_of_paths-10000*ten_tho_counter >4000 and status<4:
                 with open('inverted_index4.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=4
                 final_index={}
-            elif num_of_paths >5000 and status<5:
+            elif num_of_paths-10000*ten_tho_counter >5000 and status<5:
                 with open('inverted_index5.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=5
                 final_index={}
-            elif num_of_paths >6000 and status<6:
+            elif num_of_paths-10000*ten_tho_counter >6000 and status<6:
                 with open('inverted_index6.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=6
                 final_index={}
-            elif num_of_paths >7000 and status<7:
+            elif num_of_paths-10000*ten_tho_counter >7000 and status<7:
                 with open('inverted_index7.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=7
                 final_index={}
-            elif num_of_paths >8000 and status<8:
+            elif num_of_paths-10000*ten_tho_counter >8000 and status<8:
                 with open('inverted_index8.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=8
                 final_index={}
-            elif num_of_paths >9000 and status<9:
+            elif num_of_paths-10000*ten_tho_counter >9000 and status<9:
                 with open('inverted_index9.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=9
                 final_index={}
-            elif num_of_paths >10000 and status<10:
+            elif num_of_paths-10000*ten_tho_counter >10000 and status<10:
                 with open('inverted_index10.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
                 status=10
@@ -370,7 +371,6 @@ def main():
                 ten_tho_counter+=1
                 mega_merge(ten_tho_counter)
                 status =0
-                num_of_paths=num_of_paths-10000
             inverted_index=final_index
             end_time = time.time()
             print('indexed files '+str(num_of_paths-group_index[i])+' through '+str(num_of_paths)+' in '+str(end_time-start_time)+' seconds')
