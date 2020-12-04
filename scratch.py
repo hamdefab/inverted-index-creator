@@ -16,6 +16,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import string
 from multiprocessing import Pool
+import math
 
 paths = [file for file in glob.glob(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/DEV/**/*json")]
 my_file = Path(r"/Users/nicholasjaber/PycharmProjects/inf141/assignment 3/inverted_index.txt")
@@ -102,7 +103,7 @@ def search(query,tot_count):
                 max_tups.append((int(temp[0].split(':')[0])*int(temp[0].split(':')[2]),int(temp[0].split(':')[1])))
                 started_file=True
             elif len(temp)!=0:
-                max_tups[-1] = (int(max_tups[-1][0])+int(temp[0].split(':')[0])*int(temp[0].split(':')[2]),int(temp[0].split(':')[1]))
+                max_tups[-1] = (math.log(int(max_tups[-1][0])+int(temp[0].split(':')[0]))*int(temp[0].split(':')[2]),int(temp[0].split(':')[1]))
     file_json = open('json_files.txt', 'r', encoding ="utf-8")
     for i in sorted(max_tups, reverse=True)[:5]:
         file_json.seek(0)
@@ -296,7 +297,7 @@ def main():
                 turnicate_group=i+1
         num_of_paths=sum(group_index[:turnicate_group])
         group_index = group_index[turnicate_group:]
-        ten_tho_counter=0
+        ten_tho_counter=4
         for i in range(len(group_index)):
             list_o_tups=[]
             start_time =time.time()
@@ -359,7 +360,6 @@ def main():
             elif num_of_paths-10000*ten_tho_counter >10000 and status<10:
                 with open('inverted_index10.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
-                status=10
                 final_index={}
                 ten_tho_counter+=1
                 mega_merge(ten_tho_counter)
@@ -373,11 +373,6 @@ def main():
         print('finished dat shit')
         dict_1={}
         dict_temp={}
-        dict_10={}
-        dict_20={}
-        dict_30={}
-        dict_40={}
-        dict_50={}
         print('holy smokes')
         with open('inverted_index1.txt', "r", encoding ="utf-8") as data:
             dict_1=eval(data.read())
