@@ -247,6 +247,7 @@ def run_load(tup_arg):
     inverted_index = tup_arg[2]
     lines = tup_arg[3]
     corpus = generate_tokens(folder)
+    print(count)
     return reportFunc(corpus, count, inverted_index, lines)
 
 
@@ -321,7 +322,6 @@ def main():
                 list_o_indices = p.map(run_load,list_o_tups)
             list_o_indices.append(inverted_index)
             final_index=merge_indices(list_o_indices)
-            print(num_of_paths)
             if num_of_paths-10000*ten_tho_counter >1000 and status<1:
                 with open('inverted_index1.txt', "w+", encoding ="utf-8") as data:
                     data.write(str(final_index))
