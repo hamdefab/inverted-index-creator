@@ -270,8 +270,9 @@ def main():
         with open('inverted_index.txt', "r", encoding ="utf-8") as f:
             inverted_index = eval(f.read())
         make_all_files_count()
+        query = input('query: ')
         start_time =time.time()
-        search(input('query: '),50000)
+        search(query,50000)
         end_time = time.time()
         print(end_time-start_time)
     elif run_type=='r':
