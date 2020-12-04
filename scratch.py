@@ -268,14 +268,11 @@ def main():
             inverted_index = eval(f.read())
         make_all_files_count()
         start_time =time.time()
-        search(input('query: '),2400)
+        search(input('query: '),50000)
         end_time = time.time()
         print(end_time-start_time)
     elif run_type=='r':
         inverted_index={}
-        # if my_file.is_file():
-        #     with open("inverted_index.txt", encoding ="utf-8") as f:
-        #         inverted_index = eval(f.read())
         size_o_group=0
         group_index=[]
         for pat in range(len(paths)):
@@ -290,7 +287,7 @@ def main():
         group_index.append(len(paths)-sum(group_index))
         num_of_paths=0
         status=0
-        stopping_num=0 #if need to start run in middle
+        stopping_num=40000 #if need to start run in middle
         temp_sum=0
         turnicate_group=0
         for i in range(len(group_index)):
@@ -308,10 +305,6 @@ def main():
             file2.close()
             for j in range(group_index[i]):
                 num_of_paths+=1
-                # print(paths)
-                # print(num_of_paths)
-                # print(inverted_index)
-                # print(lines)
                 list_o_tups.append((paths[num_of_paths],num_of_paths,inverted_index,lines))
             with Pool(int(group_index[i])) as p:
                 list_o_indicies = p.map(run_load,list_o_tups)
