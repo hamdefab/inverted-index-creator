@@ -95,13 +95,16 @@ def search(start_time,short_index_list,relevant_files):
 
     file_json = open('json_files.txt', 'r', encoding ="utf-8")
     answer = tuple()
-    news = ""
     for i in sorted(max_tups, reverse=True)[:5]:
         file_json.seek(0)
         output = file_json.readlines()[i[1]]
         answer+= (i[0], output.split("\\")[-1])
     file_json.close()
-    return (str(timer) + "\n", answer)
+    answer = list(answer)
+    newans = str(timer) + " seconds\n"
+    for i, e in enumerate(answer, 2):
+        newans += str(e) + " "
+    return newans
 
 
 def make_all_files_count():
