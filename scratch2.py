@@ -101,9 +101,12 @@ def search(start_time,short_index_list,relevant_files):
         answer+= (i[0], output.split("\\")[-1])
     file_json.close()
     answer = list(answer)
-    newans = str(timer) + " seconds\n"
+    newans = str(int(timer*1000)) + " milliseconds\n"
     for i, e in enumerate(answer, 2):
-        newans += str(e) + " "
+        if type(e)==float:
+            newans += str(int(e)) + " "
+        else:
+            newans += str(e) + " "
     return newans
 
 
