@@ -11,9 +11,9 @@ import math
 from tkinter import *
 import tkinter.font as font
 
-paths = [file for file in glob.glob(r"C:\Users\teehe\Desktop\DEV\**\*json")]
-my_file = Path(r"C:\Users\teehe\Desktop\inverted-index-creator\inverted_index.txt")
-my_dup = Path(r"C:\Users\teehe\Desktop\inverted-index-creator\duplicate.txt")
+paths = [file for file in glob.glob(r"C:\Users\hamza\OneDrive\Desktop\DEV\**\*json")]
+my_file = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\inverted_index.txt")
+my_dup = Path(r"C:\Users\hamza\OneDrive\Desktop\inverted-index-creator-main\duplicate.txt")
 
 
 def generate_tokens(file):
@@ -97,22 +97,26 @@ def search(start_time,short_index_list,relevant_files):
     answer = tuple()
     for i in sorted(max_tups, reverse=True)[:5]:
         file_json.seek(0)
-        #output = file_json.readlines()[i[1]]
         f = open(paths[i[1]], "r")
         loader = json.load(f)
         for words, value in loader.items():
             if words == "url":
-                # output = file_json.readlines()[i[1]]
-                answer += (i[0], value)
+                print(i[0])
+                if math.ceil(i[0]) != 0:
+                    answer+= (i[0], value)
     file_json.close()
     answer = list(answer)
     newans = str(int(timer*1000)) + " milliseconds\n"
     for i, e in enumerate(answer, 2):
         if type(e)==float:
-            newans += str(int(e)) + " "
+            newans += str(math.ceil(e)) + " "
         else:
             newans += str(e) + "\n"
-    return newans
+    print(len(newans[newans.index("\n"):]))
+    if len(newans[newans.index("\n"):]) > 1:
+        return newans
+    else:
+        return "Give me better Query"
 
 
 def make_all_files_count():
@@ -198,7 +202,6 @@ def clear_duplicates():
             count += 1
         dict_file = open('inverted_index.txt', "w", encoding="utf-8")
         dict_file.write(str(inverted_index))
-
 
 def merge_indices(list_o_indices):
     result_dict = {}
