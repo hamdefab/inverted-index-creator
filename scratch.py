@@ -282,7 +282,7 @@ def main():
                 ps = PorterStemmer()
                 tokens = query.split(' ')
                 stems = []
-                relevant_files= set()
+                relevant_files = set()
                 for token in tokens:
                     stems.append(ps.stem(token))
                 for stem in stems:
