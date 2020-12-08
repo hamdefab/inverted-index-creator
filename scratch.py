@@ -76,24 +76,24 @@ def reportFunc(tokens, count, inverted_index, lines):
     return inverted_index
 
 
-def search(start_time,short_index_list,relevant_files):
+def search(start_time, short_index_list, relevant_files):
     max_tups = []
-    stem_set_list=[]
+    stem_set_list = []
     for i in short_index_list:
         stem_set_list.append(short_index_list[i])
     for current_count in relevant_files:
         started_file = False
-        for i in stem_set_list: #takes sets from inverted index that are in inverted index casts as list now we iterate through those
-            temp = [lis for lis in i if int(lis.split(':')[1])==int(current_count)] #gives u whatever tuples in i at file current_count
-            if len(temp)!=0 and started_file==False:
-                max_tups.append((math.log(int(temp[0].split(':')[0]))*int(temp[0].split(':')[2]),int(temp[0].split(':')[1])))
-                started_file=True
-            elif len(temp)!=0:
-                max_tups[-1] = (int(max_tups[-1][0])+(math.log(int(temp[0].split(':')[0])))*int(temp[0].split(':')[2]),int(temp[0].split(':')[1]))
+        for i in stem_set_list:  # takes sets from inverted index that are in inverted index casts as list now we iterate through those
+            temp = [lis for lis in i if int(lis.split(':')[1]) == int(current_count)]  # gives u whatever tuples in i at file current_count
+            if len(temp) != 0 and started_file is False:
+                max_tups.append((math.log(int(temp[0].split(':')[0])) * int(temp[0].split(':')[2]), int(temp[0].split(':')[1])))
+                started_file = True
+            elif len(temp) != 0:
+                max_tups[-1] = (int(max_tups[-1][0]) + (math.log(int(temp[0].split(':')[0]))) * int(temp[0].split(':')[2]), int(temp[0].split(':')[1]))
     end_time = time.time()
     timer = end_time - start_time
 
-    file_json = open('json_files.txt', 'r', encoding ="utf-8")
+    file_json = open('json_files.txt', 'r', encoding="utf-8")
     answer = tuple()
     for i in sorted(max_tups, reverse=True)[:5]:
         file_json.seek(0)
@@ -102,12 +102,12 @@ def search(start_time,short_index_list,relevant_files):
         for words, value in loader.items():
             if words == "url":
                 if math.ceil(i[0]) != 0:
-                    answer+= (i[0], value)
+                    answer += (i[0], value)
     file_json.close()
     answer = list(answer)
     newans = str(int(timer*1000)) + " milliseconds\n"
     for i, e in enumerate(answer, 2):
-        if type(e)==float:
+        if type(e) == float:
             newans += str(math.ceil(e)) + " "
         else:
             newans += str(e).replace("archive", "www") + "\n"
@@ -201,6 +201,7 @@ def clear_duplicates():
         dict_file = open('inverted_index.txt', "w", encoding="utf-8")
         dict_file.write(str(inverted_index))
 
+
 def merge_indices(list_o_indices):
     result_dict = {}
     for i in list_o_indices:
@@ -269,11 +270,11 @@ def run_load(tup_arg):
 def main():
     def response():
         run_type = E1.get()
-        if run_type =='s' and my_file.is_file():
+        if run_type == 's' and my_file.is_file():
             def srun():
                 inverted_index = {}
-                short_index={}
-                with open('inverted_index.txt', "r", encoding ="utf-8") as f:
+                short_index = {}
+                with open('inverted_index.txt', "r", encoding="utf-8") as f:
                     inverted_index = eval(f.read())
                 make_all_files_count()
                 query = E2.get()
@@ -286,8 +287,8 @@ def main():
                     stems.append(ps.stem(token))
                 for stem in stems:
                     try:
-                        if len(inverted_index[stem])<250:
-                            short_index[stem]=inverted_index[stem]
+                        if len(inverted_index[stem]) < 250:
+                            short_index[stem] = inverted_index[stem]
                             for file in inverted_index[stem]:
                                 relevant_files.add(int(file.split(':')[1]))
                     except:
@@ -299,7 +300,7 @@ def main():
                             relevant_files.add(file.split(':')[2])
                     except:
                         pass
-                answer = search(start_time,short_index,relevant_files)
+                answer = search(start_time, short_index, relevant_files)
                 L3 = Label(new_wind, text="Query results:\n")
                 L3.config(font=("Courier", 10))
                 L5 = Label(new_wind, text="{}".format(answer))
@@ -321,125 +322,124 @@ def main():
             butt['font'] = fontSize
             butt.bind()
 
-        elif run_type=='r':
-            inverted_index={}
-            size_o_group=0
-            group_index=[]
+        elif run_type == 'r':
+            inverted_index = {}
+            size_o_group = 0
+            group_index = []
             for pat in range(len(paths)):
-                pt=paths[pat]
-                size_o_group+=os.path.getsize(pt)
+                pt = paths[pat]
+                size_o_group += os.path.getsize(pt)
                 if size_o_group >= 100000:
-                    if len(group_index)>0:
-                        group_index.append(pat-sum(group_index))
+                    if len(group_index) > 0:
+                        group_index.append(pat - sum(group_index))
                     else:
                         group_index.append(pat)
-                    size_o_group=0
-            group_index.append(len(paths)-sum(group_index))
-            num_of_paths=0
-            status=0
-            stopping_num=0 #if need to start run in middle
-            temp_sum=0
-            turnicate_group=0
+                    size_o_group = 0
+            group_index.append(len(paths) - sum(group_index))
+            status = 0
+            stopping_num = 0  # if need to start run in middle
+            temp_sum = 0
+            turnicate_group = 0
             for i in range(len(group_index)):
-                temp_sum+=group_index[i]
-                if temp_sum>=stopping_num and turnicate_group==0:
-                    turnicate_group=i+1
-            num_of_paths=sum(group_index[:turnicate_group])
+                temp_sum += group_index[i]
+                if temp_sum >= stopping_num and turnicate_group == 0:
+                    turnicate_group = i + 1
+            num_of_paths = sum(group_index[:turnicate_group])
             group_index = group_index[turnicate_group:]
-            ten_tho_counter=0
+            ten_tho_counter = 0
             for i in range(len(group_index)):
-                list_o_tups=[]
-                start_time =time.time()
-                file2 = open("file2.txt", "a+", encoding ="utf-8")
-                lines= file2.readlines()
+                list_o_tups = []
+                start_time = time.time()
+                file2 = open("file2.txt", "a+", encoding="utf-8")
+                lines = file2.readlines()
                 file2.close()
                 for j in range(group_index[i]):
-                    num_of_paths+=1
-                    list_o_tups.append((paths[num_of_paths],num_of_paths,inverted_index,lines))
+                    num_of_paths += 1
+                    list_o_tups.append((paths[num_of_paths], num_of_paths, inverted_index, lines))
                 with Pool(int(group_index[i])) as p:
-                    list_o_indices = p.map(run_load,list_o_tups)
+                    list_o_indices = p.map(run_load, list_o_tups)
                 list_o_indices.append(inverted_index)
-                final_index=merge_indices(list_o_indices)
-                if num_of_paths-10000*ten_tho_counter >1000 and status<1:
-                    with open('inverted_index1.txt', "w+", encoding ="utf-8") as data:
+                final_index = merge_indices(list_o_indices)
+                if num_of_paths - 10000 * ten_tho_counter > 1000 and status < 1:
+                    with open('inverted_index1.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=1
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >2000 and status<2:
-                    with open('inverted_index2.txt', "w+", encoding ="utf-8") as data:
+                    status = 1
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 2000 and status < 2:
+                    with open('inverted_index2.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=2
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >3000 and status<3:
-                    with open('inverted_index3.txt', "w+", encoding ="utf-8") as data:
+                    status = 2
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 3000 and status < 3:
+                    with open('inverted_index3.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=3
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >4000 and status<4:
-                    with open('inverted_index4.txt', "w+", encoding ="utf-8") as data:
+                    status = 3
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 4000 and status < 4:
+                    with open('inverted_index4.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=4
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >5000 and status<5:
-                    with open('inverted_index5.txt', "w+", encoding ="utf-8") as data:
+                    status = 4
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 5000 and status < 5:
+                    with open('inverted_index5.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=5
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >6000 and status<6:
-                    with open('inverted_index6.txt', "w+", encoding ="utf-8") as data:
+                    status = 5
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 6000 and status < 6:
+                    with open('inverted_index6.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=6
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >7000 and status<7:
-                    with open('inverted_index7.txt', "w+", encoding ="utf-8") as data:
+                    status = 6
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 7000 and status < 7:
+                    with open('inverted_index7.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=7
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >8000 and status<8:
-                    with open('inverted_index8.txt', "w+", encoding ="utf-8") as data:
+                    status = 7
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 8000 and status < 8:
+                    with open('inverted_index8.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=8
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >9000 and status<9:
-                    with open('inverted_index9.txt', "w+", encoding ="utf-8") as data:
+                    status = 8
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 9000 and status < 9:
+                    with open('inverted_index9.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    status=9
-                    final_index={}
-                elif num_of_paths-10000*ten_tho_counter >10000 and status<10:
-                    with open('inverted_index10.txt', "w+", encoding ="utf-8") as data:
+                    status = 9
+                    final_index = {}
+                elif num_of_paths - 10000 * ten_tho_counter > 10000 and status < 10:
+                    with open('inverted_index10.txt', "w+", encoding="utf-8") as data:
                         data.write(str(final_index))
-                    final_index={}
-                    ten_tho_counter+=1
+                    final_index = {}
+                    ten_tho_counter += 1
                     mega_merge(ten_tho_counter)
-                    status =0
+                    status = 0
                     file = open("sample.txt", "r+")
                     file.truncate(0)
                     file.close()
-                inverted_index=final_index
+                inverted_index = final_index
                 end_time = time.time()
-                print('indexed files '+str(num_of_paths-group_index[i])+' through '+str(num_of_paths)+' in '+str(end_time-start_time)+' seconds')
-            with open('inverted_index'+str(status+1)+'.txt', "w+", encoding ="utf-8") as data:
+                print('indexed files ' + str(num_of_paths - group_index[i]) + ' through ' + str(num_of_paths) + ' in ' + str(end_time - start_time) + ' seconds')
+            with open('inverted_index' + str(status+1) + '.txt', "w+", encoding="utf-8") as data:
                 data.write(str(final_index))
-            print(status+1)
-            dict_1={}
-            dict_temp={}
-            with open('inverted_index1.txt', "r", encoding ="utf-8") as data:
-                dict_1=eval(data.read())
+            print(status + 1)
+            dict_1 = {}
+            dict_temp = {}
+            with open('inverted_index1.txt', "r", encoding="utf-8") as data:
+                dict_1 = eval(data.read())
             for i in range(status):
-                with open('inverted_index'+str(status+1)+'.txt', "r", encoding ="utf-8") as data:
+                with open('inverted_index'+str(status + 1)+'.txt', "r", encoding="utf-8") as data:
                     dict_temp = eval(data.read())
                 dict_1.update(dict_temp)
             for i in range(5):
-                with open('inverted_index_first_'+str(i+1)+'0.txt', "r", encoding ="utf-8") as data:
+                with open('inverted_index_first_' + str(i+1) + '0.txt', "r", encoding="utf-8") as data:
                     dict_temp = eval(data.read())
                 dict_1.update(dict_temp)
-            with open('inverted_index.txt', "w", encoding ="utf-8") as data:
+            with open('inverted_index.txt', "w", encoding="utf-8") as data:
                 data.write(str(dict_1))
 
         elif run_type == "c" and my_file.is_file():
             find_duplicates(55000)
             clear_duplicates(55000)
-        elif run_type=='m':
+        elif run_type == 'm':
             mega_merge()
         else:
             main()
